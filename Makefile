@@ -30,6 +30,9 @@ COM =\
 
 all: slstatus
 
+HOSTNAME ?= $(shell uname -n)
+CONFIG_HEADER = config.$(HOSTNAME).h
+
 $(COM:=.o): config.mk $(REQ:=.h)
 slstatus.o: slstatus.c slstatus.h arg.h config.h config.mk $(REQ:=.h)
 
@@ -37,13 +40,13 @@ slstatus.o: slstatus.c slstatus.h arg.h config.h config.mk $(REQ:=.h)
 	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
 
 config.h:
-	cp config.def.h $@
+	cp $(CONFIG_HEADER) $@
 
 slstatus: slstatus.o $(COM:=.o) $(REQ:=.o)
 	$(CC) -o $@ $(LDFLAGS) $(COM:=.o) $(REQ:=.o) slstatus.o $(LDLIBS)
 
 clean:
-	rm -f slstatus slstatus.o $(COM:=.o) $(REQ:=.o)
+	rm -f slstatus slstatus.o config.h $(COM:=.o) $(REQ:=.o)
 
 dist:
 	rm -rf "slstatus-$(VERSION)"
